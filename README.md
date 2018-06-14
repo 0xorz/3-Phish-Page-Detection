@@ -33,12 +33,22 @@ It supports:
 - [x] A behavior-based model to investigate general phishing behaviors
 - [x] A machine-learning-based (RandomForest) to combine all the properties to make a final decision
 
-For brand-specific detection.
 
 ## Install OCR, NLTK and ML dependences
 ```
 bash install.sh
 ```
+
+## Demo
+
+Run the demo to get predictions of testing samples under test folder.
+```
+python3 demo.py
+```
+
+
+
+# API
 
 
 

@@ -1,39 +1,71 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import util
 import os
+import numpy as np
+from sklearn import decomposition
+from sklearn.externals import joblib
 
-DEFAULT_DIR = "./test/"
+import model
+import util
+import feature_extract
 
-def read_candidates():
-    files =  os.listdir(DEFAULT_DIR)
 
-    candidate_idxs = list()
-    Candidates = list()
+try:
+    import cPickle as pickle
+except:
+    print ("No cpickle? use pickle")
+    import pickle
 
-    for f in files:
-        if not f.endswith("png") and not f.endswith("txt"):
+
+def predict(dire):
+    X = np.loadtxt("./data/X.txt")
+    print (X.shape)
+
+    pca = decomposition.PCA(n_components=100)
+    pca.fit(X)
+
+    print ("PCA fitted")
+
+    forest = None
+
+    try:
+        forest = joblib.load('./saved_models/forest_pca.pkl')
+    except:
+
+        print ("Existing model cannot be used, maybe the sklearn version problem?")
+        print ("We begin to retrain the model")
+        X = np.loadtxt("./data/X.txt")
+        Y = np.loadtxt("./data/Y.txt")
+        print ("X shape", X.shape)
+
+        pca2 = decomposition.PCA(n_components=100)
+        pca2.fit(X)
+        X = pca2.transform(X)
+        print ("X shape after PCA", X.shape)
+
+        forest = model.tree_model_train_and_save(X, Y)
+
+    candidates = util.read_crawl_candidates(dire)
+
+    for cand in candidates:
+        idx = cand.get_idx()
+        v = feature_extract.feature_vector_extraction(cand)
+
+        if not v:
+            print ("Fail to extract feature vectors of {}".format(idx))
             continue
-        idx = f.split("..")[0]
-        candidate_idxs.append(idx)
-        img = DEFAULT_DIR + idx + "..screen.png"
-        source = DEFAULT_DIR + idx + "..source.txt"
-        c = util.Candidate(idx=idx, img_path=img, source_html=source)
-        Candidates.append(c)
 
-    return Candidates
+        new_v = pca.transform(np.asarray(v).reshape(1, -1))
+        p_prob = forest.predict_proba(new_v)
+        p = forest.predict(new_v)
+        print (str(idx) + "----" + str(p.tolist()[0]) + "----" + str(p_prob.tolist()[0]))
 
-
-def read_model():
-    pass
-
-
-def prediction():
-    pass
+    return
 
 
 if __name__ == "__main__":
-    cs = read_candidates()
-    for c in cs:
-        c.print_info()
+    dire = os.getcwd() + "/test/"
+    print (dire)
+    predict(dire)
+

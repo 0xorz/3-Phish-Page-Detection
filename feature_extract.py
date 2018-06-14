@@ -8,7 +8,6 @@ except ImportError:
     from PIL import Image
 
 import pytesseract
-
 from bs4 import BeautifulSoup
 
 # import nltk - a library for NLP analysis
@@ -35,11 +34,8 @@ elif platform == "darwin":
 elif platform == "win32":
     # Win
     print ("please specify the path")
-
-
-
-# Include the above line, if you don't have tesseract executable in your PATH
-# Example tesseract_cmd: 'C:\\Program Files (x86)\\Tesseract-OCR\\tesseract'
+    # Include the above line, if you don't have tesseract executable in your PATH
+    # Example tesseract_cmd: 'C:\\Program Files (x86)\\Tesseract-OCR\\tesseract'
 
 
 def get_img_text_ocr(img_path):
@@ -81,9 +77,6 @@ def get_structure_html_text(html_path):
     :param html_path:
     :return:
     """
-    #with open(html_path, 'r') as myfile:
-    #    data = myfile.read().decode('utf-8', 'ignore')
-
     data = codecs.open(html_path, 'r', encoding='utf-8').read()
     try:
         soup = BeautifulSoup(data, "lxml")
@@ -159,20 +152,26 @@ def text_embedding_into_vector(txt_str):
     return embedding_vector
 
 
-def feature_vector_extraction(c):
+def feature_vector_extraction(candidate):
     """
-    :param c: a candidate object
+    :param candidate: a candidate object
     :return: the feature vector
     it consists of three components: img-text, html-text, form-text
     """
-    if os.path.exists(c.web_source) and os.path.exists(c.web_img):
+    print ("Analyse source and image at:")
+    print (candidate.source_html)
+    print (candidate.img_path)
+
+    if os.path.exists(candidate.source_html) and os.path.exists(candidate.img_path):
         try:
-            img_text = get_img_text_ocr(c.web_img)
+            img_text = get_img_text_ocr(candidate.img_path)
+
+            #print (img_text)
 
             if len(img_text) == 0:
                 return None
 
-            text_word_str, num_of_forms, attr_word_str = get_structure_html_text(c.web_source)
+            text_word_str, num_of_forms, attr_word_str = get_structure_html_text(candidate.source_html)
             img_v = text_embedding_into_vector(img_text)
             txt_v = text_embedding_into_vector(text_word_str)
             form_v = text_embedding_into_vector(attr_word_str)
@@ -180,20 +179,8 @@ def feature_vector_extraction(c):
             return final_v
 
         except:
-            return None
 
-
-def feature_vector_extraction_for_crawl(crawlcandidate):
-    if os.path.exists(crawlcandidate.source_html) and os.path.exists(crawlcandidate.img_txt):
-        try:
-            img_text = get_img_text_from_ocr_txt(crawlcandidate.img_txt)
-            text_word_str, num_of_forms, attr_word_str = get_structure_html_text(crawlcandidate.source_html)
-            img_v = text_embedding_into_vector(img_text)
-            txt_v = text_embedding_into_vector(text_word_str)
-            form_v = text_embedding_into_vector(attr_word_str)
-            final_v = img_v + txt_v + form_v + [num_of_forms]
-            return final_v
-        except:
+            print ("error happened! maybe your img/html-source format is not acceptable?")
             return None
 
 
@@ -209,12 +196,11 @@ def feature_vector_extraction_from_img_html(img, html):
             form_v = text_embedding_into_vector(attr_word_str)
             final_v = img_v + txt_v + form_v + [num_of_forms]
 
-            print ("IMG v:", len(img_v), len(txt_v), len(final_v))
             return final_v
 
         except:
 
-            print ("WTF, error happened! maybe your format is not acceptable?")
+            print ("error happened! maybe your format is not acceptable?")
             return None
     else:
         print ("Not exist path")
@@ -224,5 +210,10 @@ def feature_vector_extraction_from_img_html(img, html):
 if __name__ == "__main__":
 
     img = "./test/facebook-c.com.screen.png"
-    source = "./test/facebook-c.com..source.txt"
+    img = "/mnt/sdb1/Publish/3-Phish-Page-Detection/test/facebook-c.com..screen.png"
+    source = "/mnt/sdb1/Publish/3-Phish-Page-Detection/test/facebook-c.com..source.txt"
+
+    v = feature_vector_extraction_from_img_html(img=img, html=source)
+    print (v)
+
 

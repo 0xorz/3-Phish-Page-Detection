@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import os
 
+
 class Candidate(object):
     """
     Candidates are for the image and html source files
@@ -10,6 +11,9 @@ class Candidate(object):
         self.idx = idx
         self.img_path = img_path
         self.source_html = source_html
+
+    def get_idx(self):
+        return self.idx
 
     def get_img(self):
         return self.img_path
@@ -22,7 +26,7 @@ class Candidate(object):
 
 
 # Support functions
-def read_img_text_source_in_directory_from_crawl(dire):
+def read_crawl_candidates(dire):
     files = os.listdir(dire)
     if not dire.endswith('/'):
         dire = dire + '/'
@@ -39,7 +43,7 @@ def read_img_text_source_in_directory_from_crawl(dire):
         idx = get_idx(f)
 
         if idx not in idxs:
-            img_txt = dire + idx + '..screen.txt'
+            img_txt = dire + idx + '..screen.png'
             source_html = dire + idx + '..source.txt'
             can = Candidate(idx, img_txt, source_html)
             candidates.append(can)

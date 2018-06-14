@@ -20,7 +20,7 @@ from sklearn.naive_bayes import GaussianNB
 
 # this is to get score using cross_validation
 def get_scroe_using_cv(clt, X, y):
-    scores = cross_val_score(clt,X,y,cv=10)
+    scores = cross_val_score(clt, X, y, cv=10)
     print("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
 
 
@@ -170,7 +170,7 @@ def train_and_draw_roc(X_original, y):
 
     def print_fpr_tpr(fpr_knn, tpr_knn):
         for i, j in zip(fpr_knn, tpr_knn):
-            print str(i)+","+str(j)
+            print (str(i)+","+str(j))
 
     X = np.asarray(X_original)
     print ("Train shape {}".format(X.shape))
@@ -210,27 +210,6 @@ def train_and_draw_roc(X_original, y):
     print ("=============NB================")
     #print_fpr_tpr(fpr_nb, tpr_nb)
 
-    """
-    plt.clf()
-    #plt.plot(fpr_svmrbf, tpr_svmrbf, 'y.--', label ='SVM AUC=%0.4f'% auc_svmrbf)
-    plt.plot(fpr_knn, tpr_knn, 'r^--', label='KNN AUC=%0.4f' %auc_knn)
-    #plt.plot(fpr_dtree, tpr_dtree, 'b>--', label ='D.Tree AUC=%0.4f'% auc_dtree)
-    plt.plot(fpr_rforest, tpr_rforest, 'go--', label ='R.Forest AUC=%0.4f'% auc_rforest)
-    plt.plot(fpr_nb, tpr_nb, '^--', label='NB AUC=%0.4f' % auc_nb)
-
-    plt.plot([0, 1], [0, 1], 'k--')
-    plt.xlim([-0.02, 1.02])
-    plt.ylim([-0.02, 1.02])
-    plt.xlabel('FPR(False Positive Rate)',fontsize=20)
-    plt.ylabel('TPR(True Positive Rate)',fontsize=20)
-    plt.legend(loc="lower right")
-    plt.tight_layout()
-    plt.grid()
-    plt.show()
-
-    del X
-    del y
-    """
 
 
 def train_and_draw_roc_for_different_set_features(X_original, y):
@@ -344,7 +323,6 @@ if __name__ == "__main__":
     X = pca.transform(X)
     print ("X shape after PCA", X.shape)
 
-    print sum(1 for i in Y.tolist() if i ==1)
+    print (sum(1 for i in Y.tolist() if i ==1))
 
     tree_model_train_and_save(X, Y)
-    #train_and_draw_roc(X, Y)
