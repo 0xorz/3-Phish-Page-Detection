@@ -8,7 +8,6 @@ node_modules/**
 
 # ignore test
 fb/**
-data/**
 
 #ignore logs
 *.log
