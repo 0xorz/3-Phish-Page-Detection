@@ -273,7 +273,7 @@ def train_and_draw_roc_for_different_set_features(X_original, y):
     """
 
 
-def tree_model_train_and_save(x, y, forest=None):
+def train_tree(x, y):
     x = np.asarray(x)
 
     # random forest parameters
@@ -286,15 +286,10 @@ def tree_model_train_and_save(x, y, forest=None):
     get_scroe_using_cv(forest, x, y)
     forest.fit(x, y)
 
-    from sklearn.externals import joblib
-    joblib.dump(forest, 'saved_models/forest_pca.pkl')
-
     importances = forest.feature_importances_
-    std = np.std([tree.feature_importances_ for tree in forest.estimators_],
-                 axis=0)
+    std = np.std([tree.feature_importances_ for tree in forest.estimators_], axis=0)
     indices = np.argsort(importances)[::-1]
 
-    # Print the feature ranking
     print("Feature ranking:")
 
     for f in range(x.shape[1]):
@@ -314,15 +309,4 @@ def tree_model_train_and_save(x, y, forest=None):
 
 
 if __name__ == "__main__":
-    X = np.loadtxt("./data/X.txt")
-    Y = np.loadtxt("./data/Y.txt")
-    print ("X shape", X.shape)
-
-    pca = decomposition.PCA(n_components=100)
-    pca.fit(X)
-    X = pca.transform(X)
-    print ("X shape after PCA", X.shape)
-
-    print (sum(1 for i in Y.tolist() if i ==1))
-
-    tree_model_train_and_save(X, Y)
+    pass
