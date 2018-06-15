@@ -59,7 +59,7 @@ def predict(dire):
         new_v = pca.transform(np.asarray(v).reshape(1, -1))
         p_prob = forest.predict_proba(new_v)
         p = forest.predict(new_v)
-        print (str(idx) + "----" + str(p.tolist()[0]) + "----" + str(p_prob.tolist()[0]))
+        print ("Prediction result:\t", str(idx) + "----" + str(p.tolist()[0]) + "----" + str(p_prob.tolist()[0]))
 
     return
 

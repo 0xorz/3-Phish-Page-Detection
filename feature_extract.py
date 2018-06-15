@@ -185,12 +185,18 @@ def feature_vector_extraction(candidate):
 
 
 def feature_vector_extraction_from_img_html(img, html):
+
     if os.path.exists(img) and os.path.exists(html):
         print ("Img is {}".format(img))
         print ("HTML is {}".format(html))
         try:
             img_text = get_img_text_ocr(img)
+
+            if len(img_text) == 0:
+                return None
+
             text_word_str, num_of_forms, attr_word_str = get_structure_html_text(html)
+
             img_v = text_embedding_into_vector(img_text)
             txt_v = text_embedding_into_vector(text_word_str)
             form_v = text_embedding_into_vector(attr_word_str)
@@ -210,10 +216,11 @@ def feature_vector_extraction_from_img_html(img, html):
 if __name__ == "__main__":
 
     img = "./test/facebook-c.com.screen.png"
-    img = "/mnt/sdb1/Publish/3-Phish-Page-Detection/test/facebook-c.com..screen.png"
-    source = "/mnt/sdb1/Publish/3-Phish-Page-Detection/test/facebook-c.com..source.txt"
+    img = os.getcwd() + "/test/facebook-c.com..screen.png"
+    source = os.getcwd() + "/test/facebook-c.com..source.txt"
 
     v = feature_vector_extraction_from_img_html(img=img, html=source)
+    print ("The feature vector is")
     print (v)
 
 

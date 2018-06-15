@@ -1,25 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
 import argparse
 import numpy as np
 from sklearn import decomposition
 from sklearn.externals import joblib
 
 import model
-import util
 import feature_extract
+
+import sys
+import os
 
 # concurrent preidction
 # from concurrent.futures import TimeoutError
-
-try:
-    import cPickle as pickle
-
-except:
-    print ("No cpickle?, use pickle")
-    import pickle
 
 
 def parse_options():
@@ -32,7 +26,7 @@ def parse_options():
     return args
 
 
-def predict(dire):
+def predict(img, html):
     X = np.loadtxt("./data/X.txt")
     print (X.shape)
 
@@ -60,31 +54,33 @@ def predict(dire):
 
         forest = model.tree_model_train_and_save(X, Y)
 
-    candidates = util.read_crawl_candidates(dire)
+    v = feature_extract.feature_vector_extraction_from_img_html(img, html)
+    if not v:
+        print ("Fail to extract feature vectors.")
+        return
 
-    for cand in candidates:
-        idx = cand.get_idx()
-        v = feature_extract.feature_vector_extraction(cand)
-
-        if not v:
-            print ("Fail to extract feature vectors of {}".format(idx))
-            continue
-
-        new_v = pca.transform(np.asarray(v).reshape(1, -1))
-        p_prob = forest.predict_proba(new_v)
-        p = forest.predict(new_v)
-        print (str(idx) + "----" + str(p.tolist()[0]) + "----" + str(p_prob.tolist()[0]))
+    new_v = pca.transform(np.asarray(v).reshape(1, -1))
+    p_prob = forest.predict_proba(new_v)
+    p = forest.predict(new_v)
+    print ("Prediction: ----" + str(p.tolist()[0]) + "----" + str(p_prob.tolist()[0]))
 
     return
 
 
-def predict_given_img_source():
-    pass
+def main():
+    args = parse_options()
+
+    img = os.path.abspath(args.img)
+    html = os.path.abspath(args.html)
+
+    print ("Run the prediction...")
+    predict(img, html)
+
+    return
 
 
 if __name__ == "__main__":
 
-    dire = os.getcwd() + "/test/"
-    print (dire)
-    predict(dire)
+    sys.exit(main())
+
 
