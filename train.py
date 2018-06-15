@@ -17,6 +17,13 @@ def train():
     print ("X shape after PCA", X.shape)
 
     forest = model.train_tree(X, Y)
+
+    importances = forest.feature_importances_
+    std = np.std([tree.feature_importances_ for tree in forest.estimators_], axis=0)
+    indices = np.argsort(importances)[::-1]
+
+    for f in range(X.shape[1]):
+        print("%d. feature %d (%f)" % (f + 1, indices[f], importances[indices[f]]))
     
     joblib.dump(forest, 'saved_models/forest_pca.pkl')
 
